@@ -1,0 +1,419 @@
+{% extends "devices/home_base2.html" %}
+{% block cabecera%}
+{% load static %}
+        <div class="col-12 font-weight-bolder" >
+            <label style="margin-left: 30px; margin-top: 5px; font-size: 25px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+                <img src="{% static 'devices/img/direccion4.png' %}"> Configuración Usuarios
+            </label>
+              
+        </div>     
+{% endblock %}
+    {% block content%}
+    {% load static %}
+    
+    <div class="container-fluid col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">   
+        <div class="card border-info">
+            <div style="background-color: #006476; padding: 10px; font-size: 17px;" class="card-header border-success text-light">
+                Usuarios
+            </div>
+            <div class="card-body" id="grafico">
+                <div class="row">
+                    <div class="form-group col-12" style="padding-bottom: 10px;">   
+                        <form class="form" action="" method="POST">
+                            {% csrf_token %} 
+                            <div class="row">
+                                <div class="form-group col">
+                                    <div class="input-group">
+                                        <div>
+                                            <button type="button" class="btn dropdown-item waves-effect"  style="background-color:#61b265; border-radius: 20px;" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_usuario_nuevo" data-bs-whatever="@mdo"><img src=""> Nuevo</button>
+                                        </div>              
+                                    </div>
+                                    
+                                </div>               
+                            </div>         
+                        </form>
+                    </div>
+                    <div class="col-12" style="margin-left: 0px;">
+                        <div style="width: 100%;" >
+                            <table class="table table-striped border border-info" style="text-align: center;">
+                                <thead class="bg-info">
+                                <tr class="table-info">
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">ID</th>                                                
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Nombre</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Apellido</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Email</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Cargo</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Perfil</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Estado</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Fecha de Registro</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Accion</th>
+                                </tr>
+                                </thead>
+                                <tbody style="padding: 0px;"> 
+                                    {% for users in users %}                       
+                                        <tr class="align-middle">
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.id}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.nombre}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.apellido}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.email}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.cargo}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.perfil}}</td>
+                                            <td class="text-light" style="padding-top: 1px;padding-bottom: 1px;">
+                                                {% if users.estado == 'Activo' %}
+                                                    <div  style="background-color: #009688;">
+                                                        ACTIVO
+                                                    </div>
+                                                {% else %}
+                                                    <div>
+                                                        INACTIVO
+                                                    </div>   
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.fecha}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">
+                                                <ul class="navbar-nav mr-auto">
+                                                <li class="nav-item dropdown">
+                                                    <a style="padding: 0px;" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                      <img height="20px" src="{% static 'devices/img/clipboard.svg' %}" style="margin-left: 10px; "/></a>
+                                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                        <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_perfil_asignar" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Asignar Equipos</a>
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_usuario_edit{{users.id}}" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Editar</a>
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_usuario_edit" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Cambiar contraseña</a>
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_usuario_eliminar" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Eliminar</a>
+                                                      <!--<div class="dropdown-divider"></div>
+                                                      <a class="dropdown-item" href="#">Something else here</a>-->
+                                                    </div>
+                                                </li>
+                                                <!--<button type="button" class="btn  waves-effect" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#fullHeightModalRight" data-bs-whatever="@mdo">
+                                                <img src="{% static 'devices/img/edit.png' %}" alt="">-->
+                                                </ul>
+                                            </td>          
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if users.has_other_pages %}
+                            <form action="" method="POST">
+                                {% csrf_token %}   
+                                <nav aria-label="Page" style="margin-left: 10px;">
+                                    <ul class="pagination">
+                                        {% if users.has_previous %}                                                                
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" value="{{ users.previous_page_number }}">&laquo;</button>
+                                                <!--<a class="page-link" href="?page={{ users.previous_page_number }}">&laquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                        {% for i in users.paginator.page_range %}
+                                        {% if users.number == i %}
+                                            <li class="page-item active bg-info" aria-current="page">
+                                                <a class="page-link" style="background:#00bcd4; border: 1px solid transparent;">
+                                                    <span >{{ i }} </span>
+                                                </a>                                          
+                                            </li>
+                                        {% else %}                                       
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" style="color: #00bcd4;" value="{{ i }}">{{ i }}</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ i }}">{{ i }}</a>-->
+                                            </li>                                            
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% if users.has_next %}
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" style="color: #00bcd4;" name="page" value="{{ users.next_page_number }}">&raquo;</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ users.next_page_number }}">&raquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </form> 
+                            {% endif %}
+                        </div>
+                    </div>                                                                  
+                </div>  
+            </div>
+            <!-- MODAL USUARIO NUEVO-->
+            <div id="modal_usuario_nuevo" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Nuevo Usuario</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Centered forms -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="form_registro">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="alert alert-success text-center" id="exito" style="display:none;">
+                                                  <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                <fieldset>
+                                                    <legend class="fw-bold fs-6"><i class="icon-reading position-left"></i> Datos Personales</legend>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="usuario_nom">Ingresar nombre:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="usuario_nom" id="usuario_nom" placeholder="">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="usuario_ape">Ingresar apellidos:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="usuario_ape" id="usuario_ape" placeholder="">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="usuario_cargo">Ingresar cargo:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="usuario_cargo" id="usuario_cargo" placeholder="">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="usuario_email">Ingresar Email:</label>
+                                                        <input type="text" placeholder="nombre@dominio.com" id="usuario_email" name="usuario_email" class="form-control form-control-sm">
+                                                    </div>
+
+                                                </fieldset>
+                                            </div>
+
+                                                <div class="col-md-6">
+                                                <fieldset>
+                                                    <legend class="fw-bold fs-6"><i class="icon-cogs position-left"></i> Opciones de usuario</legend>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="select_perfil">Perfil de usuario:</label>
+                                                        <select name="select_perfil" id="select_perfil" class="form-select form-select-sm">
+                                                            {% for perfil in perfil %}
+                                                            <option value="{{ perfil.perfil }}">{{ perfil.perfil }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="select_estado">Estado de usuario:</label>
+                                                        <select name="select_estado" id="select_estado" class="form-select form-select-sm">
+                                                            <option value="Activo" >Activo</option>
+                                                            <option value="Inactivo">Inactivo</option>
+                                                        </select>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="select_alerta">Alertas:</label>
+                                                        <select name="select_alerta" id="select_alerta" class="form-select form-select-sm">
+                                                        <option value="1">Mostrar alertas web</option>
+                                                        <option value="0">Ocultar alertas web</option>
+                                                    </select>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="password">Ingresar contraseña:</label>
+                                                        <input type="password" class="form-control form-control-sm" id="password" name="password" placeholder="Ingresar contraseña">
+                                                    </div>
+                                                                                                
+                                                </fieldset>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                            </div>
+                            <!-- /form centered -->
+                            </div>
+                        </div>
+                         
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="registrar();">Registrar<i class="icon-arrow-right14 position-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+
+            <!-- MODAL USUARIO EDITAR-->
+            {% for users in users %}
+            <div id="modal_usuario_edit{{users.id}}" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Editar Usuario</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Centered forms -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="form_editar">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="alert alert-success text-center" id="exito2" style="display:none;">
+                                                  <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                                                </div>
+                                                <input type="hidden" id="id_usuario" name="id_usuario">
+                                                <input type="hidden" id="id_user_table" name="id_user_table" value="<?php echo $_SESSION['id']; ?>">
+                                            <div class="col-md-6">
+                                                <fieldset class="text-semibold">
+                                                    <legend class="fw-bold fs-6"><i class="icon-reading position-left"></i> Datos Personales</legend>
+
+                                                    <div class="mb-3">
+                                                        <label>Ingresar nombre:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="item1" id="item1" placeholder="" value="{{users.nombre}}">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label>Ingresar apellidos:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="item2" id="item2" placeholder="" value="{{users.apellido}}">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label>Ingresar cargo:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="item3" id="item3" placeholder="" value="{{users.cargo}}">
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label>Ingresar Email:</label>
+                                                        <input type="text" placeholder="nombre@dominio.com" id="item4" name="item4" class="form-control form-control-sm" value="{{users.email}}">
+                                                    </div>
+
+                                                </fieldset>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <fieldset>
+                                                    <legend class="fw-bold fs-6"><i class="icon-cogs position-left"></i> Opciones de usuario</legend>
+                                                    <div class="mb-3">
+                                                        <label>Perfil de usuario:</label>
+                                                        <select name="item5" id="item5" class="form-select form-select-sm">
+                                                            {% for perfil in perfil %}
+                                                                {% if perfil.perfil == users.perfil %}
+                                                                <option value="{{perfil.perfil}}" selected>{{perfil.perfil}}</option>
+                                                                {% else %}
+                                                                <option value="{{perfil.perfil}}">{{perfil.perfil}}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label>Estado de usuario:</label>
+                                                        <select name="item6" id="item6" class="form-select form-select-sm">
+                                                            {% if users.estado == 'Activo' %}
+                                                            <option value="Activo" selected>Activo</option>
+                                                            <option value="Inactivo">Inactivo</option>
+                                                            {% else %}
+                                                            <option value="Activo" >Activo</option>
+                                                            <option value="Inactivo" selected>Inactivo</option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label>Alertas: </label>
+                                                        <select name="item7" id="item7" class="form-select form-select-sm">
+                                                            
+                                                            {% if users.alertas == '1' %}
+                                                            <option value="1" selected>Mostrar alertas web</option>
+                                                            <option value="0">Ocultar alertas web</option>
+                                                            {% else %}
+                                                            <option value="1" >Mostrar alertas web</option>
+                                                            <option value="0" selected>Ocultar alertas web</option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>									
+                                                </fieldset>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                            </div>
+                            <!-- /form centered -->
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="actualizar();">Guardar<i class="icon-arrow-right14 position-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- /MODAL -->
+
+            <!-- MODAL USUARIO ASIGNAR-->
+            <div id="modal_perfil_asignar" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Asignar </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            
+                        </div>
+                        <div class="modal-body">
+
+                            <form id="form_asignar">
+                                <div class="row" id="lista_modulos">
+                                    {% for modulos in modulos %}
+                                        <div class="col-md-6 form-check" >
+                                            <fieldset class="text-semibold" >
+                                                <div class="mb-3" style="background-color: rgb(224, 224, 224); border-radius: 5px;">
+                                                    <input type="checkbox" id="id_checkbox" style="margin-left: 5px;" class="checkbox" onclick='' checked>
+                                                    <input type="hidden" id="id_modulo" value="{{ modulos.id_menu }}" > <i class="fa fa-user"></i> {{ modulos.nombre }}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </form>
+                            <hr>
+
+                        </div>
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="desmarcar(':checkbox');eliminar_todo();">Desmarcar todos</button>
+                            <button type="button" class="btn btn-default" onclick="marcar(':checkbox');asignar_todo();">Marcar todos</button>
+                            <button type="button" class="btn btn-info" onclick="asignar();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+            
+            
+            <!-- /MODAL -->
+
+            <!-- MODAL USUARIO ELIMINAR-->
+            <div id="modal_usuario_eliminar" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Eliminar Usuario </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form id="form_eliminar">
+                              <input type="hidden" id="id_item_eliminar" name="id_item_eliminar"> 
+                            </form>
+                            <p>¿Está seguro de eliminar este item?</p>
+                            <hr>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="eliminar();">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+        </div>
+    </div>
+    
+    {% endblock %}

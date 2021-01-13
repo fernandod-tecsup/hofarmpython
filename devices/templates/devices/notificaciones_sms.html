@@ -1,0 +1,331 @@
+{% extends "devices/home_base2.html" %}
+{% block cabecera%}
+{% load static %}
+        <div class="col-12 font-weight-bolder" >
+            <label style="margin-left: 30px; margin-top: 5px; font-size: 25px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+                <img src="{% static 'devices/img/direccion4.png' %}"> Gestión de Notificaciones - SMS
+            </label>
+              
+        </div>     
+{% endblock %}
+    {% block content%}
+    {% load static %}
+    <div class="container-fluid col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">   
+        <div class="card border-info">
+            <div style="background-color: #006476; padding: 10px; font-size: 17px;" class="card-header border-success text-light">
+                Notificaciones
+            </div>
+            <div class="card-body" id="grafico">
+                <div class="row">
+                    <div class="form-group col-12" style="padding-bottom: 10px;">   
+                        <form class="form" action="" method="POST">
+                            {% csrf_token %} 
+                            <div class="row">
+                                <div class="form-group col">
+                                    <div class="input-group">
+                                        <div>
+                                            <button type="button" class="btn dropdown-item waves-effect"  style="background-color:#61b265; border-radius: 20px;" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_noti_nuevo" data-bs-whatever="@mdo"><img src=""> Nuevo</button>
+                                        </div>              
+                                    </div>
+                                    
+                                </div>               
+                            </div>         
+                        </form>
+                    </div>
+                    <div class="col-12" style="margin-left: 0px;">
+                        <div style="width: 100%;" >
+                            <table class="table table-sm table-striped border border-info" style="text-align: center;">
+                                <thead class="bg-info">
+                                    <tr class="table-info">
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">ID</th>                                                
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Nombre</th> 
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Celular</th> 
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Nivel de Criticidad</th>
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Estado</th> 
+                                        <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="padding: 0px;"> 
+                                    {% for users in users %}                       
+                                        <tr class="align-middle">
+                                            <td style="">{{users.id}}</td>
+                                            <td style="">{{users.name}}</td>
+                                            <td style="">{{users.phone}}</td>
+                                            <td style="">{{users.cargo}}</td>
+                                            <td class="text-light" style="">
+                                                {% if users.estado == '1' %}
+                                                    <div style="background-color: #009688;">
+                                                        ACTIVO
+                                                    </div>
+                                                {% else %}
+                                                    <div>
+                                                        INACTIVO
+                                                    </div>   
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">
+                                                <ul class="navbar-nav mr-auto">
+                                                <li class="nav-item dropdown">
+                                                    <a style="padding: 0px;" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                      <img height="20px" src="{% static 'devices/img/clipboard.svg' %}" style="margin-left: 10px; "/></a>
+                                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_noti_asignar" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Asignar</a>
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_noti_edit" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Editar</a>
+                                                      <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_noti_eliminar" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Eliminar</a>
+                                                      <!--<div class="dropdown-divider"></div>
+                                                      <a class="dropdown-item" href="#">Something else here</a>-->
+                                                    </div>
+                                                </li>
+                                                <!--<button type="button" class="btn  waves-effect" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#fullHeightModalRight" data-bs-whatever="@mdo">
+                                                <img src="{% static 'devices/img/edit.png' %}" alt="">-->
+                                                </ul>
+                                            </td>          
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if users.has_other_pages %}
+                            <form action="" method="POST">
+                                {% csrf_token %}   
+                                <nav aria-label="Page" style="margin-left: 10px;">
+                                    <ul class="pagination">
+                                        {% if users.has_previous %}                                                                
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" value="{{ users.previous_page_number }}">&laquo;</button>
+                                                <!--<a class="page-link" href="?page={{ users.previous_page_number }}">&laquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                        {% for i in users.paginator.page_range %}
+                                        {% if users.number == i %}
+                                            <li class="page-item active bg-info" aria-current="page">
+                                                <a class="page-link" style="background:#00bcd4; border: 1px solid transparent;">
+                                                    <span >{{ i }} </span>
+                                                </a>                                          
+                                            </li>
+                                        {% else %}                                       
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" style="color: #00bcd4;" value="{{ i }}">{{ i }}</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ i }}">{{ i }}</a>-->
+                                            </li>                                            
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% if users.has_next %}
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" style="color: #00bcd4;" name="page" value="{{ users.next_page_number }}">&raquo;</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ users.next_page_number }}">&raquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </form> 
+                            {% endif %}
+                        </div>
+                    </div>                                                                  
+                </div>  
+            </div>
+            <!-- MODAL NOTIFICACIONES NUEVO-->
+            <div id="modal_noti_nuevo" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Nueva Notificación</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                            <form class="form" id="form_registro">
+                                <div class="alert alert-info text-center" id="exito" style="display:none;">
+                                   <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                                </div>
+                                <div class="row">
+                                        <input type="hidden" class="form-control" name="id_usuario_sesion_global" id="id_usuario_sesion_global" value="<?php echo $_SESSION['id']; ?>">
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label" for="not_nom">Nombre del personal:</label>
+                                            <input type="text" class="form-control form-control-sm" name="not_nom" id="not_nom" placeholder=" ">
+                                        </div>
+
+                                        <div class="mb-3">
+                                        <label class="form-label" for="not_tipo">Tipo de personal:</label>
+                                        <select name="not_tipo" id="not_tipo" class="form-select form-select-sm">
+                                            
+                                            {% for criticidad in criticidad %}
+                                            <option value="{{criticidad.id}}">{{criticidad.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+
+                                    
+                                    
+                                        <div class="mb-3">
+                                        <label class="form-label" for="not_cel">Celular:</label>
+                                        <input type="text" class="form-control form-control-sm" name="not_cel" id="not_cel" placeholder=" ">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label" for="not_est">Estado:</label>
+                                            <select name="not_est" id="not_est" class="form-select form-select-sm">
+                                            <option value="1">Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                        </div>
+
+                                        
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="registrar();">Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+
+            <!-- MODAL NOTIFICACIONES EDITAR-->
+            {% for users in users %}
+            <div id="modal_noti_edit" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Editar Notificación</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form_editar">
+                                <div class="alert alert-info text-center" id="exito2" style="display:none;">
+                                   <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                                </div>
+                                <div class="row">
+                                        <input type="hidden" id="id_not" name="id_not">
+                                        
+                                            <div class="mb-3">
+                                                <label class="form-label" for="item1">Nombre del personal</label>
+                                                <input type="text" class="form-control form-control-sm" name="item1" id="item1" placeholder="" value="{{users.name}}">
+                                            </div>
+
+                                            <div class="mb-3">
+                                            <label class="form-label" for="item2">Tipo de personal</label>
+                                            <select name="item2" id="item2" class="form-select form-select-sm">
+                                                
+                                                {% for criticidad in criticidad %}
+                                                    {% if criticidad.name == users.cargo %}
+                                                    <option value="{{criticidad.id}}" selected>{{criticidad.name}}</option>
+                                                    {% else %}
+                                                    <option value="{{criticidad.id}}">{{criticidad.name}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            </div>
+                                            <div class="mb-3">
+                                            <label class="form-label" for="item3">Celular</label>
+                                            <input type="text" class="form-control form-control-sm" name="item3" id="item3" placeholder="" value="{{users.phone}}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label" for="item4">Estado</label>
+                                                <select name="item4" id="item4" class="form-select form-select-sm">
+                                                {% if users.estado == '1' %}
+                                                <option value="1" selected>Activo</option>
+                                                <option value="0">Inactivo</option>
+                                                {% else %}
+                                                <option value="1" >Activo</option>
+                                                <option value="0" selected>Inactivo</option>
+                                                {% endif %}
+                                            </select>
+                                            </div>
+
+                                        
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="actualizar();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- /MODAL -->
+            
+            <!-- MODAL NOTIFICACIONES ASIGNAR-->
+            <div id="modal_noti_asignar" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Asignar </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                        <form id="form_asignar">
+                            <!--<div class="alert alert-success text-center" id="exito_asignacion" style="display:none;">
+                                   <span class="icon-checkmark3"> </span><span> Asignacion con exito</span>
+                            </div>
+                            <input type="hidden" id="id_personal" name="id_personal" >-->
+                            <div class="row" id="lista_modulos">
+                                {% for modulos in modulos %}
+                                    <div class="col-md-4 form-check" >
+                                        <fieldset class="text-semibold" >
+                                            <div class="mb-3" style="background-color: rgb(224, 224, 224); border-radius: 5px;">
+                                                <input type="checkbox" id="id_checkbox" style="margin-left: 5px;" class="checkbox" onclick='' checked>
+                                                <input type="hidden" id="id_modulo" value="{{ modulos.id_menu }}" > <i class="fa fa-user"></i>{{modulos.agrupado}}-{{ modulos.nombre }}
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                        </form>
+                        </div>
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" onclick="desmarcar(':checkbox');eliminar_todo();">Desmarcar todos</button>
+                            <button type="button" class="btn" onclick="marcar(':checkbox');asignar_todo();">Marcar todos</button>
+                            <button type="button" class="btn btn-info" onclick="asignar();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+
+            <!-- MODAL NOTIFICACIONES ELIMINAR-->
+            <div id="modal_noti_eliminar" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Eliminar Notificación </h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form id="form_eliminar">
+                              <input type="hidden" id="id_item_eliminar" name="id_item_eliminar"> 
+                            </form>
+                            <p>¿Está seguro de eliminar este item?</p>
+                            <hr>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" onclick="eliminar();">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+        </div>
+    </div>
+    
+    {% endblock %}

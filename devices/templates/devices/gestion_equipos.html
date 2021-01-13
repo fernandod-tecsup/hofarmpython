@@ -1,0 +1,474 @@
+{% extends "devices/home_base2.html" %}
+{% block cabecera%}
+{% load static %}
+        <div class="col-12 font-weight-bolder" >
+            <label style="margin-left: 30px; margin-top: 5px; font-size: 25px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+                <img src="{% static 'devices/img/direccion4.png' %}"> Gestion de Equipos
+            </label>
+              
+        </div>     
+{% endblock %}
+    {% block content%}
+    {% load static %}
+    <div class="container-fluid col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">   
+        <div class="card border-info">
+            <div style="background-color: #006476; padding: 10px; font-size: 17px;" class="card-header border-success text-light">
+                Listado de equipos
+            </div>
+            <div class="card-body" id="grafico">
+                <div class="row">
+                    <div class="form-group col-12" style="padding-bottom: 10px;">   
+                        <form class="form" action="" method="POST">
+                            {% csrf_token %} 
+                            <div class="row">
+                                <div class="form-group col">
+                                    <div class="input-group">
+                                        <div>
+                                            <button type="button" class="btn dropdown-item waves-effect"  style="background-color:#61b265; border-radius: 20px;" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_equipo_reg" data-bs-whatever="@mdo"><img src=""> Nuevo</button>
+                                        </div>              
+                                    </div>
+                                    
+                                </div>               
+                            </div>         
+                        </form>
+                    </div>
+                    <div class="col-12" style="margin-left: 0px;">
+                        <div style="width: 100%;" >
+                            <table class="table table-sm table-striped border border-info" style="text-align: center;">
+                                <thead class="bg-info">
+                                <tr class="table-info">
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">ID</th>                                                
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Lugar</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Ubicacion</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Descripcion</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Estado</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Accion</th>
+                                </tr>
+                                </thead>
+                                <tbody style="padding: 0px;"> 
+                                    {% for users in users %}                       
+                                        <tr class="align-middle">
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.id}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.lugar}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.ubicacion}}</td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">{{users.descripcion}}</td>
+                                            <td class="text-light" style="padding:0px;">
+                                                {% if users.estado == '1' %}
+                                                    <div  style="background-color: #009688;">
+                                                        ENCENDIDO
+                                                    </div>
+                                                {% else %}
+                                                    <div>
+                                                        APAGADO
+                                                    </div>   
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding-top: 1px;padding-bottom: 1px;">
+                                                <ul class="navbar-nav mr-auto" >
+                                                    <li class="nav-item dropdown" >
+                                                        <a style="padding: 0px;" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <img height="20px" src="{% static 'devices/img/clipboard.svg' %}"/></a>
+                                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                        <a class="btn dropdown-item waves-effect" href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_equipo_edit{{users.id}}" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}"/> Editar</a>
+                                                        <a class="btn dropdown-item waves-effect" href=""><img src="{% static 'devices/img/edit.png' %}"/> Alertas</a>
+                                                        </div>
+                                                    </li>
+                                                <!--<button type="button" class="btn  waves-effect" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#fullHeightModalRight" data-bs-whatever="@mdo">
+                                                <img src="{% static 'devices/img/edit.png' %}" alt="">-->
+                                                </ul>
+                                            </td>          
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if users.has_other_pages %}
+                            <form action="" method="POST">
+                                {% csrf_token %}   
+                                <nav aria-label="Page" style="margin-left: 10px;">
+                                    <ul class="pagination">
+                                        {% if users.has_previous %}                                                                
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" value="{{ users.previous_page_number }}">&laquo;</button>
+                                                <!--<a class="page-link" href="?page={{ users.previous_page_number }}">&laquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                        {% for i in users.paginator.page_range %}
+                                        {% if users.number == i %}
+                                            <li class="page-item active bg-info" aria-current="page">
+                                                <a class="page-link" style="background:#00bcd4; border: 1px solid transparent;">
+                                                    <span >{{ i }} </span>
+                                                </a>                                          
+                                            </li>
+                                        {% else %}                                       
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" style="color: #00bcd4;" value="{{ i }}">{{ i }}</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ i }}">{{ i }}</a>-->
+                                            </li>                                            
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% if users.has_next %}
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" style="color: #00bcd4;" name="page" value="{{ users.next_page_number }}">&raquo;</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ users.next_page_number }}">&raquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </form> 
+                            {% endif %}
+                        </div>
+                    </div>                                                                  
+                </div>  
+            </div>
+            <!-- MODAL EQUIPO EDIT-->
+            {% for users in users %}
+            <div id="modal_equipo_edit{{users.id}}" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Editar Equipo</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success text-center" id="exito" style="display:none;">
+                              <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                            </div>
+                            <div class="row">
+                                <form id="form_editar">
+                                    <input type="hidden" id="id_equipo" name="id_equipo">
+                                    <input type="hidden" id="equipo" name="equipo">
+                                   
+
+                                        <div class="bm-3">
+                                            <label for="item2_eq" class="form-label">Nombre (Max 20 Caracteres)</label>
+                                            <input type="text" class="form-control" name="item2_eq" id="item2_eq" placeholder="" value="{{users.lugar}}">
+                                        </div>
+
+                                        <div class="bm-3">
+                                            <label for="item3_eq" class="form-label">Ubicacion (Max 20 Caracteres)</label>
+                                            <input type="text" name="item3_eq" id="item3_eq" class="form-control" value="{{users.ubicacion}}">
+                                        </div>
+
+                                        <div class="bm-3">
+                                        <label class="form-label" for="id_sucursal">Sucursal</label>
+                                        <select class="form-select" name="id_sucursal" id="id_sucursal" class="form-control">
+                                            
+                                            {% for sucursal in sucursal %}
+                                                {% if sucursal.id_sucursal == users.id_sucursal %}
+                                                <option value="{{sucursal.id_sucursal}}" selected>{{sucursal.nombre}}</option>
+                                                {% else %}
+                                                <option value="{{sucursal.id_sucursal}}">{{sucursal.nombre}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label class="form-label">Detalle</label>
+                                            <input type="text" class="form-control" name="item4_eq" id="item4_eq" placeholder=" " value="{{users.descripcion}}">
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label class="form-label">Orden</label>
+                                            <input type="text" name="item5_eq" id="item5_eq" class="form-control" value="{{users.orden}}">
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label class="form-label">Prendido / Apagado</label>
+                                            <div class="form-check form-switch">
+                                                <input type="checkbox" name="onoffswitch" class="form-check-input" id="myonoffswitch">
+                                                <label class="form-check-label" for="myonoffswitch">
+                                                    <span class="onoffswitch-inner"></span>
+                                                    <span class="onoffswitch-switch"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    
+                                </form>
+                            </div>
+                            <hr>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <!--<button type="button" class="btn btn-link" data-dismiss="modal" onclick="reseteo();">Cerrar</button>-->
+                            <button type="button" class="btn btn-primary" onclick="actualizar();estado();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- /MODAL -->
+            <!-- MODAL ALERTA EDIT-->
+            <div id="fullHeightModalRight" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Editar Alerta</h6>
+                            <button type="button" class="btn close" data-bs-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Centered forms -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="form_editar">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="alert alert-success text-center" id="exito" style="display:none;">
+                                                  <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                                                </div>
+                                                <input type="hidden" id="id_alerta" name="id_alerta">
+                                                <input type="hidden" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION['id']; ?>">
+                                                <div class="form-group input-group-xs">
+                                                <label>Equipo</label>
+                                                <select name="item1" id="item1" class="form-control">
+                                                    <option value="">
+                                                </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <fieldset class="text-semibold">
+                                                        <legend><i class="icon-reading position-left"></i> Valores</legend>
+
+                                                        <div class="form-group input-group-xs">
+                                                            <label>Valor maximo:</label>
+                                                            <input type="text" class="form-control " name="item2" id="item2" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>Valor minimo:</label>
+                                                            <input type="text" class="form-control" name="item3" id="item3" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>SMS a Operario 1: <span style="color:red">*</span></label>
+                                                            <input type="text" class="form-control" name="item4" id="item4" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>SMS a Sub Gerente 3: <span style="color:red">*</span></label>
+                                                            <input type="text" name="item5" id="item5" class="form-control">
+                                                        </div>
+                                                        <div class="form-group input-group-xs">
+                                                            <label>SMS a Director: <span style="color:red">*</span></label>
+                                                            <input type="text" name="item10" id="item10" class="form-control">
+                                                        </div>
+
+                                                    </fieldset>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <fieldset>
+                                                        <legend class="text-semibold"><i class="icon-cogs position-left"></i> Mensajes</legend>
+
+                                                        <div class="form-group input-group-xs">
+                                                            <label>Mensaje valor maximo:</label>
+                                                            <input type="text" class="form-control " name="item6" id="item6" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>Mensaje valor minimo:</label>
+                                                            <input type="text" class="form-control" name="item7" id="item7" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>SMS a Supervisor 2: <span style="color:red">*</span></label>
+                                                            <input type="text" class="form-control" name="item8" id="item8" placeholder="">
+                                                        </div>
+                                                        
+                                                        <div class="form-group input-group-xs">
+                                                            <label>SMS a Gerente 4: <span style="color:red">*</span></label>
+                                                            <input type="text" name="item9" id="item9" class="form-control">
+                                                        </div>
+                                                                                                    
+                                                    </fieldset>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <h6><span style="color:red">*</span> Ingresar diferencial en grados de temperatura fuera de rango</h6>
+                                                </div>
+                                                </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                    <!-- /form centered -->
+                               </div>
+
+                            <hr>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link" data-dismiss="modal" onclick="reseteo2();">Cerrar</button>
+                            <button type="button" class="btn btn-primary" onclick="actualizar();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+            <!-- MODAL EQUIPO REG-->
+            <div id="modal_equipo_reg" class="modal fade" tabindex="-1" aria-labelledby="fullHeightModalRight" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <h6 class="modal-title">Registrar Equipo</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success text-center" id="exito_reg" style="display:none;">
+                              <span class="icon-checkmark3"> </span><span> Los datos han sido registrados</span>
+                            </div>
+                            <div class="row">
+                                <form id="form_registro">
+                                    <input type="hidden" id="id_usuario_session" name="id_usuario_session" value="<?php echo $_SESSION['id'] ?>">
+                                    
+
+                                        <div class="form-group input-group-xs">
+                                            <label>Nombre (Max 20 Caracteres)</label>
+                                            <input type="text" class="form-control" name="item1_reg" id="item1_reg" placeholder=" ">
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label>Ubicacion (Max 20 Caracteres)</label>
+                                            <input type="text" name="item2_reg" id="item2_reg" class="form-control">
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                        <label>Sucursal</label>
+                                        <select name="item3_reg" id="item3_reg" class="form-select">
+                                            <option value="">SELECCIONE LA PLANTA</option>
+                                            {% for sucursal in sucursal %}
+                                            <option value="{{sucursal.id_sucursal}}">{{sucursal.nombre}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label>Detalle</label>
+                                            <input type="text" class="form-control" name="item4_reg" id="item4_reg" placeholder=" ">
+                                        </div>
+
+                                        <div class="form-group input-group-xs">
+                                            <label>Orden</label>
+                                            <input type="text" name="item5_reg" id="item5_reg" class="form-control">
+                                        </div>
+
+                                   
+                                </form>
+                            </div>
+                            <hr>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <!--<button type="button" class="btn btn-link" data-dismiss="modal" onclick="reseteo_reg();">Cerrar</button>-->
+                            <button type="button" class="btn btn-primary" onclick="registrar();">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /MODAL -->
+        </div>
+    </div>
+    <div class="container-fluid col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">   
+        <div class="card border-info">
+            <div style="background-color: #006476; padding: 10px; font-size: 17px;" class="card-header border-success text-light">
+                Listado de Alertas
+            </div>
+            <div class="card-body" id="grafico">
+                <div class="row">
+                    <div class="col-12" style="margin-left: 0px;">
+                        <div style="width: 100%;" >
+                            <table class="table table-striped table-sm border border-info" style="text-align: center;">
+                                <thead class="bg-info">
+                                <tr class="table-info">
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">ID</th>                                                
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Equipo</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Ubicacion</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Descripcion</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Valor Maximo</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Mensaje Valor Maximo</th>
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Valor Minimo</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Mensaje Valor Minimo</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Criticidad</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Fecha de Actualizacion</th> 
+                                    <th style="padding-top: 0px;padding-bottom: 0px;" scope="col">Accion</th> 
+                                </tr>
+                                </thead>
+                                <tbody style="padding: 0px;">
+                                    
+                                    {% for alerta_equipo in alerta_equipo %}                       
+                                        <tr>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.id}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.lugar}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.ubicacion}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.descripcion}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.valmax}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.desvalmax}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.valmin}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.desvalmin}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.n1 }}  {{ alerta_equipo.n2 }}  {{ alerta_equipo.n3 }}  {{ alerta_equipo.n4 }}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;">{{alerta_equipo.fec}}</td>
+                                            <td style="padding-top: 0px;padding-bottom: 0px;"><button type="button" class="btn  waves-effect" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_equipo_edit{{alerta_equipo.id}}" data-bs-whatever="@mdo"><img src="{% static 'devices/img/edit.png' %}" alt=""></td>                 
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if users.has_other_pages %}
+                            <form action="" method="POST">
+                                {% csrf_token %}   
+                                <nav aria-label="Page" style="margin-left: 10px;">
+                                    <ul class="pagination">
+                                        {% if users.has_previous %}                                                                
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" value="{{ users.previous_page_number }}">&laquo;</button>
+                                                <!--<a class="page-link" href="?page={{ users.previous_page_number }}">&laquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                        {% for i in users.paginator.page_range %}
+                                        {% if users.number == i %}
+                                            <li class="page-item active bg-info" aria-current="page">
+                                                <a class="page-link" style="background:#00bcd4; border: 1px solid transparent;">
+                                                    <span >{{ i }}</span>
+                                                </a>                                          
+                                            </li>
+                                        {% else %}                                       
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" name="page" style="color: #00bcd4;" value="{{ i }}">{{ i }}</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ i }}">{{ i }}</a>-->
+                                            </li>                                            
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% if users.has_next %}
+                                            <li class="page-item">
+                                                <button class="page-link" type="submit" style="color: #00bcd4;" name="page" value="{{ users.next_page_number }}">&raquo;</button>
+                                                <!--<a class="page-link" style="color: #00bcd4;" href="?page={{ users.next_page_number }}">&raquo;</a>-->
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </form> 
+                            {% endif %}
+                        </div>
+                    </div>                                                                  
+                </div>  
+            </div>
+        </div>
+    </div>
+    {% endblock %}
