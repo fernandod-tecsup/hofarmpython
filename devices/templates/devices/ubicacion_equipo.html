@@ -2,10 +2,18 @@
 {% block cabecera%}
 {% load static %}
         <div class="col-12 font-weight-bolder" >
-            <label style="margin-left: 30px; margin-top: 5px; font-size: 25px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
-                <img src="{% static 'devices/img/direccion4.png' %}"> {{ agrupado }}
-            </label>
-            <a id="btnpdfhtml" href="" style="margin-right: 18px;" class="btn btn-info float-right" ><img src="{% static 'devices/img/printer.svg' %}"> Imprimir</a>       
+            <div class="row">
+                <div class="col-10">
+                    <label style="margin-left: 30px; margin-top: 5px; font-size: 25px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+                        <img src="{% static 'devices/img/direccion4.png' %}"> {{ agrupado }}
+                    </label>
+                </div>
+            
+                <div class="col-2">
+                    <a id="btnpdfhtml" href=""  onClick="window.print()" class="btn btn-info justify-content-end" >
+                    <img src="{% static 'devices/img/printer.svg' %}"> Imprimir</a> 
+                </div>
+            </div>   
         </div>     
 {% endblock %}
 {% block cardbody %}

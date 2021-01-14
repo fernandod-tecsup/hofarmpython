@@ -1024,7 +1024,7 @@ def informe(request):
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
 
-    return render(request,"devices/informe.html",{'users':users,'desde':desde,'hasta':hasta});
+    return render(request,"devices/informe.html",{'users':users,'desde':desde,'hasta':hasta,'tabla':tabla});
 
 def alertas(request):
     alertas = ParameterAlerta.objects.raw('SELECT a.id,f_security_d(b.agrupado_aes,3264) as equipo,f_security_d(b.ubicacion_aes,3264) as ubicacion,f_security_d(b.description_aes,3264) as descripcion, f_security_d(a.valor_aes,5710) as valmax,f_security_d(a.mensaje_maximo_aes,5710) as desvalmax,f_security_d(a.valor_minimo_aes,5710) as valmin,f_security_d(a.mensaje_minimo_aes,5710) as desvalmin,f_security_d(a.valor_sms_n1_aes,5710) as n1,f_security_d(a.valor_sms_n2_aes,5710) as n2,f_security_d(a.valor_sms_n3_aes,5710) as n3 ,f_security_d(a.valor_sms_n4_aes,5710) as n4,a.updated_at as fec, a.id_device,f_security_d(a.valor_sms_n5_aes,5710) as n5 FROM parameter_alerta a INNER JOIN devices b ON a.id_device = b.id ORDER BY a.id ASC')
@@ -1206,6 +1206,136 @@ def pdfreportdiario(request):
     buffer.seek(0)
 
     return FileResponse(buffer, as_attachment=True,filename='Reporte Diario.pdf');
+
+def pdfHistorialAlertas(request):
+    
+    if request.GET.get('sucur'):
+        suc = request.GET['sucur']
+    else:
+        suc = '1'
+
+    if request.GET.get('desde'):
+        desde = request.GET['desde']
+
+    if request.GET.get('hasta'):
+        hasta = request.GET['hasta']
+
+    desgraf = parse_datetime(desde)
+    dm = desgraf.strftime("%Y-%m-%d")
+    hasgraf = parse_datetime(hasta)
+    hm = hasgraf.strftime("%Y-%m-%d")
+    data = []    
+    hist_alert = DigitalAlerts.objects.raw("SELECT a.id as id,CONCAT(f_security_d(b.agrupado_aes,3264),' - ',f_security_d(b.ubicacion_aes,3264)) as camara,f_security_d(a.descripcion_aes,3381) as mensaje,f_security_d(a.valor_aes,3381) as valor,f_security_d(a.limite_umbral_aes,3381) as umbral ,f_security_d(a.estado_aes,3381) as estado ,a.created_at as fecha1,a.fecha FROM digital_alerts a,devices b INNER JOIN permisos_camara p on (p.id_device = b.id and p.id_usuario = 1) WHERE a.fecha between '"+dm+"' and '"+hm+"' and a.id_device = b.id and b.id_sucursal = "+suc+" ORDER BY a.id desc LIMIT 0,4000")
+
+    data.append(['ID','Camara','Mensaje de Alerta','Valor','Limite Umbral','Estado','Fecha de Registro'])
+    for hist_alert in hist_alert:
+        data.append([hist_alert.id,hist_alert.camara,hist_alert.mensaje,hist_alert.valor,hist_alert.umbral,hist_alert.estado,hist_alert.fecha1])
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer,pagesize=landscape(letter))
+    w, h = A4
+    max_rows_per_page = 28
+    x_offset = 50
+    y_offset = 345 
+    padding = 15
+    xlist = [x + x_offset for x in [0, 100, 200, 300,400, 500,600,700]]
+    
+    ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)] 
+    ylist2 = [h - 330 - i*padding for i in [0, 1]]
+    for rows in grouper(data,max_rows_per_page):
+        p.drawImage( "D:/aresM2m/hofarmdjango/hofarm_py/hofarm/devices/static/devices/img/logo_cliente.png",40, 500, 120, 90,preserveAspectRatio=True)
+        p.setFont("Helvetica-Bold", 20)
+        p.drawString(300, 550, "HISTORIAL DE ALERTAS")
+        p.setFont("Helvetica-Bold", 11.5)
+        p.drawString(315, 530, "FECHA: "+ hm)
+        p.setFont("Helvetica", 9)
+        rows = tuple(filter(bool, rows))
+        #p.setFillColor(gray)
+        p.setStrokeColorRGB(0.8, 0.8, 0.8)
+        #p.setFillColor(blue)
+        #p.grid(xlist,ylist2)
+        #for x,cell1 in zip(xlist,datacabecera):
+        #    p.drawCentredString(x + 100, 501 , str(cell1))
+        p.grid(xlist, ylist[:len(rows) + 1])
+        for y, row in zip(ylist[:-1], rows):
+            for x, cell in zip(xlist, row):
+                if x >= 100 :
+                    p.drawCentredString(x + 60, y - padding + 4, str(cell))
+                else:
+                    p.drawCentredString(x + 50, y - padding + 4, str(cell))
+        p.showPage()
+    #p.showPage()
+    p.save()
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True,filename='HistorialAlertas.pdf');
+
+def pdfInforme(request):
+    
+    if request.GET.get('tabla'):
+        tabla = request.GET['tabla']
+    else:
+        tabla = 'users'
+
+    if request.GET.get('desde'):
+        desde = request.GET['desde']
+
+    if request.GET.get('hasta'):
+        hasta = request.GET['hasta']
+
+    desgraf = parse_datetime(desde)
+    dm = desgraf.strftime("%Y-%m-%d")
+    hasgraf = parse_datetime(hasta)
+    hm = hasgraf.strftime("%Y-%m-%d")
+    data = []    
+    hist_alert = DigitalAlerts.objects.raw("SELECT a.id,f_security_d(b.name_aes,7312) as name,a.id_objeto,a.tabla,a.campo, case id_tabla when 'parameter_alerta' then f_security_d(old_value,5710) when 'users' then f_security_d(old_value,7312) when 'devices' then f_security_d(old_value,3264) when 'personal' then f_security_d(old_value,5867) when 'personal_notification' then f_security_d(old_value,5867) end as oldvalue, case id_tabla when 'parameter_alerta' then f_security_d(new_value,5710) when 'users' then f_security_d(new_value,7312) when 'devices' then f_security_d(new_value,3264) when 'personal' then f_security_d(new_value,5867) when 'personal_notification' then f_security_d(new_value,5867) end as newvalue, a.fecha FROM audit a, users b WHERE date(a.fecha) between '"+dm+"' and '"+hm+"' and id_tabla='"+tabla+"' and a.id_user = b.id ORDER BY a.id DESC LIMIT 0,3000")
+
+    data.append(['ID','User','ID Objeto','Tabla','Campo','Antiguo Valor','Nuevo Valor','Fecha'])
+    for hist_alert in hist_alert:
+        data.append([hist_alert.id,hist_alert.name,hist_alert.id_objeto,hist_alert.tabla,hist_alert.campo,hist_alert.oldvalue,hist_alert.newvalue,hist_alert.fecha])
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer,pagesize=landscape(letter))
+    w, h = A4
+    max_rows_per_page = 28
+    x_offset = 50
+    y_offset = 345 
+    padding = 15
+    xlist = [x + x_offset for x in [0,50, 100, 200, 300,400, 500,600,700]]
+    
+    ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)] 
+    ylist2 = [h - 330 - i*padding for i in [0, 1]]
+    for rows in grouper(data,max_rows_per_page):
+        p.drawImage( "D:/aresM2m/hofarmdjango/hofarm_py/hofarm/devices/static/devices/img/logo_cliente.png",40, 500, 120, 90,preserveAspectRatio=True)
+        p.setFont("Helvetica-Bold", 20)
+        p.drawString(300, 550, "Informe")
+        p.setFont("Helvetica-Bold", 11.5)
+        p.drawString(315, 530, "FECHA: "+ hm)
+        p.setFont("Helvetica", 9)
+        rows = tuple(filter(bool, rows))
+        #p.setFillColor(gray)
+        p.setStrokeColorRGB(0.8, 0.8, 0.8)
+        #p.setFillColor(blue)
+        #p.grid(xlist,ylist2)
+        #for x,cell1 in zip(xlist,datacabecera):
+        #    p.drawCentredString(x + 100, 501 , str(cell1))
+        p.grid(xlist, ylist[:len(rows) + 1])
+        for y, row in zip(ylist[:-1], rows):
+            for x, cell in zip(xlist, row):
+                if x >= 100 :
+                    p.drawCentredString(x + 60, y - padding + 4, str(cell))
+                else:
+                    p.drawCentredString(x + 50, y - padding + 4, str(cell))
+        p.showPage()
+    #p.showPage()
+    p.save()
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True,filename='Informe.pdf');
 
 def generatepdf(request):
     if request.GET.get('agrup'):

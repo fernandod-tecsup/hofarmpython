@@ -42,4 +42,6 @@ urlpatterns = [
     path('sucursales/',views.sucursales,name="sucursales"),
     path('perfiles/',views.perfiles,name="perfiles"),
     path('usuarios/',views.usuarios,name="usuarios"),
+    path('pdfHistorialAlertas/',views.pdfHistorialAlertas,name="pdfHistorialAlertas"),
+    path('pdfInforme/',views.pdfInforme,name="pdfInforme"),
 ]

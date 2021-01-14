@@ -41,13 +41,9 @@
                                         
                                         <div class="input-group-text"><img src="{% static 'devices/img/ubicacion.svg' %}"/></div>
                                         
-                                        <select class="form-select" id="inputGroupSelect01" style="width: 300px;" name="sucur">
+                                        <select class="form-select" id="sucur" style="width: 300px;" name="sucur">
                                             {% for sucursal in sucursal %}                                
-                                                <option value="{{sucursal.id_sucursal}}" 
-                                                    {% if idsucur == sucursal.id_sucursal%}
-                                                        selected
-                                                    {%else%}
-                                                    {% endif %}>{{sucursal.nombre}}</options>
+                                                <option value="{{sucursal.id_sucursal}}">{{sucursal.nombre}}</options>
                                             {% endfor %}
                                         </select>
                                     </div>             
@@ -58,7 +54,7 @@
                                             <button class="btn btn-info fo" type="submit" href=""><img src="{% static 'devices/img/search.svg' %}" > Buscar</button>
                                         </div>
                                         <div style="margin-left: 30px; background-color:#ff9900; border-radius: 20px;">
-                                            <a class="btn" href="{% url 'generatepdfMKT' %}?sucur={{suc}}&desde={{desde}}&hasta={{hasta}}" ><img src="{% static 'devices/img/printer.svg' %}"> Exportar PDF</a>
+                                            <a class="btn" href="{% url 'pdfHistorialAlertas' %}?sucur={{suc}}&desde={{desde}}&hasta={{hasta}}" ><img src="{% static 'devices/img/printer.svg' %}"> Exportar PDF</a>
                                         </div>              
                                     </div>
                                     
