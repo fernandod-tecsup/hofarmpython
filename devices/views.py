@@ -1046,11 +1046,11 @@ def alertas(request):
 def gestion_equipos(request):
     sucursal = Sucursal.objects.all()
     alertas = Devices.objects.raw('SELECT a.id,a.id_sucursal,f_security_d(a.agrupado_aes,3264) as lugar,f_security_d(a.ubicacion_aes,3264) as ubicacion,f_security_d(a.description_aes,3264) as descripcion ,f_security_d(a.state_aes,3264) as estado,a.id_sucursal,f_security_d(a.orden_aes,3264) as orden FROM devices a order by CAST(f_security_d(a.orden_aes,3264) AS UNSIGNED) asc')
-    if request.POST.get('idsuc'):
-        idsuc = request.POST['idsuc']
+    if request.GET.get('idalert'):
+        idalert = request.GET['idalert']
     else:
-        idsuc = '0'
-    alerta_equipo = Devices.objects.raw('SELECT a.id,f_security_d(b.agrupado_aes,3264) as lugar ,f_security_d(b.ubicacion_aes,3264) as ubicacion ,f_security_d(b.description_aes,3264) as descripcion ,f_security_d(b.valor_maximo_aes,3264) as valmax,f_security_d(a.mensaje_maximo_aes,5710) as desvalmax,f_security_d(a.valor_minimo_aes,5710) as valmin,f_security_d(a.mensaje_minimo_aes,5710) as desvalmin,f_security_d(a.valor_sms_n1_aes,5710) as n1,f_security_d(a.valor_sms_n2_aes,5710) as n2,f_security_d(a.valor_sms_n3_aes,5710) as n3,f_security_d(a.valor_sms_n4_aes,5710) as n4,a.updated_at as fec,a.id_device,f_security_d(a.valor_sms_n5_aes,5710) FROM parameter_alerta a INNER JOIN devices b ON (a.id_device = b.id) WHERE a.id_device = '+idsuc+' ORDER BY a.id DESC')
+        idalert = '3'
+    alerta_equipo = Devices.objects.raw('SELECT a.id,f_security_d(b.agrupado_aes,3264) as lugar ,f_security_d(b.ubicacion_aes,3264) as ubicacion ,f_security_d(b.description_aes,3264) as descripcion ,f_security_d(b.valor_maximo_aes,3264) as valmax,f_security_d(a.mensaje_maximo_aes,5710) as desvalmax,f_security_d(a.valor_minimo_aes,5710) as valmin,f_security_d(a.mensaje_minimo_aes,5710) as desvalmin,f_security_d(a.valor_sms_n1_aes,5710) as n1,f_security_d(a.valor_sms_n2_aes,5710) as n2,f_security_d(a.valor_sms_n3_aes,5710) as n3,f_security_d(a.valor_sms_n4_aes,5710) as n4,a.updated_at as fec,a.id_device,f_security_d(a.valor_sms_n5_aes,5710) FROM parameter_alerta a INNER JOIN devices b ON (a.id_device = b.id) WHERE a.id = '+idalert+' ORDER BY a.id DESC')
 
     if request.POST.get('page'):
         page = request.POST['page']
